@@ -4,7 +4,7 @@ const user = require("../models/userModel");
 const registerUser = asyncHandler(async (req, res) => {
   const { name, email, password, profilePic } = req.body;
   if (!name || !email || !password) {
-    res.status(400); // 204 => No content
+    res.status(400); //status 204 => No content
     throw new Error("Please fill all fields.");
   }
   const isUserExists = await user.findOne({ email });
@@ -24,6 +24,7 @@ const registerUser = asyncHandler(async (req, res) => {
     throw new Error("User not found.");
   }
 });
+
 const authUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const User = await user.findOne({ email });
@@ -31,7 +32,23 @@ const authUser = asyncHandler(async (req, res) => {
     res.send({
       User,
     });
+  } else {
+    res.status(401);
+    throw new Error("Please Check your Email or Password");
   }
 });
 
-module.exports = { registerUser, authUser };
+const allUser = asyncHandler(async (req, res) => {
+  const key = req.query.search
+    ? {
+        $or: [
+          { name: { $regex: req.query.search, $options: "i" } },
+          { email: { $regex: req.query.search, $options: "i" } },
+        ],
+      }
+    : {};
+  const users = await user.find(key)//.find({ _id: { $ne: req.User._id } });
+  res.send(users);
+});
+
+module.exports = { registerUser, authUser, allUser };

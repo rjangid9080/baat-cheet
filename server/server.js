@@ -1,7 +1,7 @@
 const express = require("express");
 const connectDB = require("./config/mongoDb");
 const dotenv = require('dotenv');
-const userRoutes = require('./routes/userRoute')
+const userRoutes = require('./routes/userRoutes')
 
 dotenv.config();
 //<--Connecting Database-->

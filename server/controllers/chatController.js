@@ -86,5 +86,32 @@ const createGroupChat = asyncHandler(async (req, res) => {
       isGroupChat: true,
       groupAdmin: req.User,
     });
-  } catch (error) {}
+
+    const fullGroupChat = await chatDB
+      .findOne({ _id: groupChat._id })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password");
+
+    res.status(200).send(fullGroupChat);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
 });
+
+const renameGroup = asyncHandler(async (req, res) => {
+  const { chatId, chatName } = req.body;
+
+  const updatedChat = await chatDB
+    .findByIdAndUpdate(chatId, { chatName }, { new: true })
+    .populate("users", "-password")
+    .populate("groupAdmin", "-password");
+  if (!updatedChat) {
+    res.status(404);
+    throw new Error("chat not found");
+  } else {
+    res.status(200).json(updatedChat);
+  }
+});
+
+module.exports = { accessChat, createGroupChat, fetchChats, renameGroup };

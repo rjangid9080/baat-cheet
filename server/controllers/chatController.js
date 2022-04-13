@@ -44,3 +44,47 @@ const accessChat = asyncHandler(async (req, res) => {
     throw new Error(error.message);
   }
 });
+
+const fetchChats = asyncHandler(async (req, res) => {
+  try {
+    chatDB
+      .find({ users: { $elemMatch: { $eq: req.User._id } } })
+      .populate("users", "-password")
+      .populate("groupAdmin", "-password")
+      .populate("latestMessage")
+      .sort({ updatedAt: -1 })
+      .then(async (result) => {
+        result = await userDB.populate(result, {
+          path: "latestMessage.sender",
+          select: "name profilePic email",
+        });
+        res.status(200).send(result);
+      });
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
+
+const createGroupChat = asyncHandler(async (req, res) => {
+  if (!req.body.users || !req.body.name) {
+    return res
+      .status(400)
+      .send({ message: "Please fill all the required fields." });
+  }
+  let users = JSON.parse(req.body.users);
+  if (users.length < 2) {
+    return res
+      .status(400)
+      .send({ message: "Group Chat have atleast 2 members." });
+  }
+  users.push(req.User);
+  try {
+    const groupChat = await chatDB.create({
+      chatName: req.body.name,
+      users: users,
+      isGroupChat: true,
+      groupAdmin: req.User,
+    });
+  } catch (error) {}
+});

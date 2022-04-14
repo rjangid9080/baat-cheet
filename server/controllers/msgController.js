@@ -18,8 +18,8 @@ const sendMessage = asyncHandler(async (req, res) => {
 
   try {
     let message = await msgDB.create(newMsg);
-    message = await message.populate("sender", "name pic").execPopulate();
-    message = await message.populate("chat").execPopulate();
+    message = await message.populate("sender", "name pic");
+    message = await message.populate("chat");
     message = await userDB.populate(message, {
       path: "chat.users",
       select: "name profilePic email",
@@ -34,6 +34,17 @@ const sendMessage = asyncHandler(async (req, res) => {
   }
 });
 
-const allMessages = asyncHandler(async () => {});
+const allMessages = asyncHandler(async (req, res) => {
+  try {
+    const messages = await msgDB
+      .find({ chat: req.params.chatId })
+      .populate("sender", "name profilePic email")
+      .populate("chat");
+    res.json(messages);
+  } catch (error) {
+    res.status(400);
+    throw new Error(error.message);
+  }
+});
 
 module.exports = { sendMessage, allMessages };

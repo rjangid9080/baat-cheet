@@ -1,8 +1,7 @@
-import './App.css';
 
 function App() {
   return (
-    <div className="App">
+    <div>
       BaatCheet-app
     </div>
   );

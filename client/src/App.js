@@ -1,8 +1,9 @@
+import Logo from "./Components/Logo";
 
 function App() {
   return (
-    <div>
-      BaatCheet-app
+    <div className="text-6xl">
+      <Logo/>
     </div>
   );
 }

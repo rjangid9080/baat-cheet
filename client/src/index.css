@@ -1,3 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.cookie{
+    font-family: 'Cookie', cursive;
+}

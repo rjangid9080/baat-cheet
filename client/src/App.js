@@ -1,6 +1,6 @@
 import Logo from "./Components/Logo";
 import SignIn from "./Components/SignIn";
-
+import SignUp from "./Components/SignUp";
 function App() {
   return (
     <section className="w-full min-h-screen flex flex-col bg-gray-100 justify-center items-center">
